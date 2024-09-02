@@ -26,7 +26,7 @@ class Chain:
             ### SCRAPED TEXT FROM WEBSITE:
             {page_data}
             ### INSTRUCTION:
-            The scraped text is from the career's page of a website.
+            The scraped text is from the career's page of a website.or input text
             Your job is to extract the job postings and return them in JSON format containing the following keys: `role`, `experience`, `skills` and `description`.
             Only return the valid JSON.
             ### VALID JSON (NO PREAMBLE):
@@ -43,7 +43,7 @@ class Chain:
             res = json_parser.parse(res.content)
         except OutputParserException:
             # Handle parsing errors, e.g., if the context is too large
-            raise OutputParserException("Context too big. Unable to parse jobs.")
+            raise OutputParserException("provode Context `role`, `experience`, `skills` and `description`. . Unable to write colud email for provode contect")
         # Return the result as a list of job postings
         return res if isinstance(res, list) else [res]
 
@@ -55,14 +55,14 @@ class Chain:
             {job_description}
 
             ### INSTRUCTION:
-            You are SURESH Beekhani, a business development executive at AtliQ. AtliQ is an AI & Software Consulting company dedicated to facilitating
+            You are SURESH Beekhani, a business development executive at NexGenai. NexGeani is an AI & Software Consulting company dedicated to facilitating
             the seamless integration of business processes through automated tools. 
             Over our experience, we have empowered numerous enterprises with tailored solutions, fostering scalability, 
             process optimization, cost reduction, and heightened overall efficiency. 
-            Your job is to write a cold email to the client regarding the job mentioned above describing the capability of AtliQ 
+            Your job is to write a cold email to the client regarding the job mentioned above describing the capability of NexGenai
             in fulfilling their needs.
-            Also add the most relevant ones from the following links to showcase AtliQ's portfolio: {link_list}
-            Remember you are Mohan, BDE at AtliQ. 
+            Also add the most relevant ones from the following links to showcase NexGenai portfolio: {link_list}
+            Remember you are SURESH Beekhani, BDE at NexGeani. 
             Do not provide a preamble.
             ### EMAIL (NO PREAMBLE):
             """

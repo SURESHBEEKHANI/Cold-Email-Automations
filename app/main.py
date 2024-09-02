@@ -1,29 +1,27 @@
-import streamlit as st  # Import Streamlit at the top
-# Continue with the rest of your imports
+import streamlit as st  # Import Streamlit
 from langchain_community.document_loaders import WebBaseLoader
 from chains import Chain
 from portfolio import Portfolio
 from utils import clean_text
 
-# Set the Streamlit page configuration first, before any other Streamlit commands
+# Configure the Streamlit page
 st.set_page_config(
-    layout="wide", 
-    page_title="Cloud Email Generator", 
+    layout="wide",
+    page_title="Cloud Email Generator",
     page_icon="📧"
 )
 
-
-
 def sidebar():
     """
-    This function sets up the sidebar for the Streamlit app. 
-    It displays a logo and a centered title using custom HTML and CSS.
+    Sets up the sidebar with a logo and a centered title using custom HTML and CSS.
     """
+    # Display the logo in the sidebar
+    st.sidebar.image(
+        r'C:\Users\SURESH BEEKHANI\Desktop\project-genai-cold-email-generator\imgs\img.png', 
+        use_column_width=True
+    )
     
-    # Display the logo in the sidebar using an image file
-    st.sidebar.image(r'C:\Users\SURESH BEEKHANI\Desktop\project-genai-cold-email-generator\imgs\img.png', use_column_width=True)
-    
-    # Inject custom HTML and CSS to create a centered title in the sidebar
+    # Center the title in the sidebar with custom HTML and CSS
     st.sidebar.markdown("""
         <style>
         .sidebar-title {
@@ -39,63 +37,55 @@ def sidebar():
 
 def create_streamlit_app(llm, portfolio, clean_text):
     """
-    This function sets up the main functionality of the Streamlit app. 
-    It takes user input, processes web content or plain text, extracts job details, and generates emails.
+    Sets up the main functionality of the Streamlit app.
     
     Parameters:
-    - llm: A language model instance (likely the Chain object).
-    - portfolio: An instance of the Portfolio class.
-    - clean_text: A function for cleaning up text.
+    - llm: Language model instance (e.g., Chain object).
+    - portfolio: Instance of the Portfolio class.
+    - clean_text: Function for cleaning up text.
     """
-    # Create a single input field for URL or plain text
-    user_input = st.chat_input("Could you Please Provide a Valid URL or The Job Description")
+    # Input field for URL or plain text
+    user_input = st.chat_input("Please provide a valid URL or job description:")
 
     if user_input:
         try:
-            # Check if the user input is a URL
             if user_input.startswith(('http://', 'https://')):
-                # Load and process data from the URL entered by the user
+                # Load and process data from URL
                 loader = WebBaseLoader([user_input])
                 page_content = loader.load().pop().page_content
                 data = clean_text(page_content)
             else:
-                # Use the plain text input provided by the user
+                # Use the provided plain text
                 data = clean_text(user_input)
             
-            # Load portfolio data and extract job details using the language model
+            # Load portfolio and extract job details
             portfolio.load_portfolio()
             jobs = llm.extract_jobs(data)
             
-            # Generate and display email content if jobs are found
             if jobs:
                 for job in jobs:
-                    # Extract skills required for the job
+                    # Extract required skills and query portfolio
                     skills = job.get('skills', [])
-                    
-                    # Query portfolio for relevant links based on the skills
                     links = portfolio.query_links(skills)
                     
-                    # Generate an email draft based on job details and relevant links
+                    # Generate email draft
                     email = llm.write_mail(job, links)
                     
-                    # Display the generated email content in the app, formatted as Markdown
-                    st.code(email, language='markdown')
+                  
+                    st.code(email.title().strip(), language="Markdown")
             else:
-                # Display a warning message if no jobs are found in the provided content
-                st.warning("No jobs found in the provided URL or text.")
+                st.warning("Warning: No job postings were found in the content you provided. Please ensure that your submission includes valid information and includes the following details: role, experience, skills, and description.")
                 
         except Exception as e:
-            # Display an error message if an exception occurs during processing
             st.error(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    
-    # Initialize components for the app
+    # Initialize components
     chain = Chain()
     portfolio = Portfolio()
     
-    # Display the sidebar with the logo and title
+    # Display sidebar
     sidebar()
     
-    # Create and run the Streamlit app with the initialized components
+    # Run the Streamlit app
     create_streamlit_app(chain, portfolio, clean_text)
