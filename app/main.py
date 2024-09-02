@@ -11,15 +11,18 @@ st.set_page_config(
     page_icon="📧"
 )
 
+
+
 def sidebar():
     """
-    Sets up the sidebar with a logo and a centered title using custom HTML and CSS.
+    Sets up the sidebar with a logo, caption, title, and description using custom HTML and CSS.
     """
     # Display the logo in the sidebar
     st.sidebar.image(
         r'C:\Users\SURESH BEEKHANI\Desktop\project-genai-cold-email-generator\imgs\img.png', 
         use_column_width=True
     )
+    
     
     # Center the title in the sidebar with custom HTML and CSS
     st.sidebar.markdown("""
@@ -34,6 +37,23 @@ def sidebar():
             Cloud Email Generator
         </div>
         """, unsafe_allow_html=True)
+    
+    # Add a description below the title
+    st.sidebar.markdown("""
+        <style>
+        .sidebar-description {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        </style>
+        <div class="sidebar-description">
+            This tool helps you generate personalized cold emails quickly and effectively. 
+            Input your details, and let the AI do the rest, crafting compelling messages 
+            tailored to your needs.
+        </div>
+        """, unsafe_allow_html=True)
+
 
 def create_streamlit_app(llm, portfolio, clean_text):
     """
