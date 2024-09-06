@@ -37,7 +37,7 @@ def sidebar():
     """
     # Display the logo in the sidebar
     st.sidebar.image(
-        r'C:\Users\SURESH BEEKHANI\Desktop\project-genai-cold-email-generator\imgs\img.png', 
+        imgs\img.png', 
         use_column_width=True
     )
     # Displays an image in the sidebar with the path specified.
