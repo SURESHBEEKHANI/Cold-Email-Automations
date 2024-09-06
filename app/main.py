@@ -37,8 +37,7 @@ def sidebar():
     """
     # Display the logo in the sidebar
     st.sidebar.image(
-        r'imgs/img.png,
-
+        r'imgs/img.png',  # Corrected the path string here
         use_column_width=True
     )
     # Displays an image in the sidebar with the path specified.
