@@ -1,10 +1,10 @@
 # Import necessary modules
 import os  # Provides a way to use operating system-dependent functionality like accessing environment variables
-from langchain_groq import ChatGroq  # Imports the ChatGroq class for interacting with a language model
-from langchain_core.prompts import PromptTemplate  # Imports PromptTemplate for creating prompt templates
-from langchain_core.output_parsers import JsonOutputParser  # Imports JsonOutputParser for parsing output into JSON
-from langchain_core.exceptions import OutputParserException  # Imports OutputParserException for handling parsing errors
-from dotenv import load_dotenv  # Imports load_dotenv to load environment variables from a .env file
+from langchain_groq import ChatGroq  # type: ignore # Imports the ChatGroq class for interacting with a language model
+from langchain_core.prompts import PromptTemplate  # type: ignore # Imports PromptTemplate for creating prompt templates
+from langchain_core.output_parsers import JsonOutputParser  # type: ignore # Imports JsonOutputParser for parsing output into JSON
+from langchain_core.exceptions import OutputParserException  # type: ignore # Imports OutputParserException for handling parsing errors
+from dotenv import load_dotenv  # type: ignore # Imports load_dotenv to load environment variables from a .env file
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -16,7 +16,7 @@ class Chain:
         self.llm = ChatGroq(
             temperature=0,  # Set temperature for model responses (0 for deterministic responses)
             groq_api_key=os.getenv("GROQ_API_KEY"),  # Retrieve the API key from environment variables
-            model_name="llama-3.1-70b-versatile"  # Specify the model name to use
+            model_name="llama-3.1-70b-versatile"  # Specify the model name to us
         )
 
     def extract_jobs(self, cleaned_text):
