@@ -8,3 +8,6 @@ streamlit>=1.0.0
 pandas==2.0.2
 python-dotenv==1.0.0
 pysqlite3-binary==0.5.3.post1
+streamlit==1.38.0
+watchdog==4.0.2
+# Add any other dependencies here
