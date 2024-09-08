@@ -1,53 +1,31 @@
-__import__('pysqlite3')
+import __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-import streamlit as st  # type: ignore # Import Streamlit
-# Imports the Streamlit library and assigns it the alias 'st'. 
-# Streamlit is used for creating interactive web apps.
-# The '# type: ignore' comment suppresses type checking warnings for this line.
 
-from langchain_community.document_loaders import WebBaseLoader # type: ignore
-# Imports the WebBaseLoader class from the langchain_community.document_loaders module.
-# This class is likely used to load and process content from web URLs.
-# The '# type: ignore' comment suppresses type checking warnings for this line.
-
-from chains import Chain
-# Imports the Chain class from the chains module.
-# This class is probably used for processing or handling data in the application.
-
-from portfolio import Portfolio
-# Imports the Portfolio class from the portfolio module.
-# This class is likely used to manage or query portfolio data.
-
-from utils import clean_text
-# Imports the clean_text function from the utils module.
-# This function is used to preprocess or clean up text data.
-
+import streamlit as st  # Import Streamlit for creating the web app
+from langchain_community.document_loaders import WebBaseLoader  # Import WebBaseLoader for processing web content
+from chains import Chain  # Import Chain for processing or handling data
+from portfolio import Portfolio  # Import Portfolio for managing or querying portfolio data
+from utils import clean_text  # Import clean_text for preprocessing text data
 
 # Configure the Streamlit page
 st.set_page_config(
-    layout="wide",
-    page_title="Cloud Email Generator",
-    page_icon="📧"
+    layout="wide",  # Use a wide layout
+    page_title="Cloud Email Generator",  # Set the page title
+    page_icon="📧"  # Set the page icon
 )
-# Sets up the configuration for the Streamlit app's page.
-# 'layout="wide"' makes the layout wide, providing more horizontal space.
-# 'page_title="Cloud Email Generator"' sets the title that appears in the browser tab.
-# 'page_icon="📧"' sets the icon for the browser tab.
 
 def sidebar():
     """
-    Sets up the sidebar with a logo, caption, title, description, and step-by-step guide using custom HTML and CSS.
+    Sets up the sidebar with a logo, title, description, and step-by-step guide.
     """
-    # Display the logo in the sidebar
+    # Display the logo
     st.sidebar.image(
-        r'imgs/img.png',  # Corrected the path string here
+        r'imgs/img.png',  # Path to the logo image
         use_column_width=True
     )
-    # Displays an image in the sidebar with the path specified.
-    # 'use_column_width=True' ensures the image uses the full width of the sidebar.
 
-    # Center the title in the sidebar with custom HTML and CSS
+    # Add a centered title with custom HTML and CSS
     st.sidebar.markdown("""
         <style>
         .sidebar-title {
@@ -60,11 +38,8 @@ def sidebar():
             Cloud Email Generator
         </div>
         """, unsafe_allow_html=True)
-    # Adds custom HTML and CSS to the sidebar for styling.
-    # The title 'Cloud Email Generator' is centered and styled with specified font size and weight.
-    # 'unsafe_allow_html=True' allows the inclusion of raw HTML in Streamlit components.
 
-    # Add a description and step-by-step guide below the title
+    # Add a description and step-by-step guide
     st.sidebar.markdown("""
         <style>
         .sidebar-description {
@@ -95,10 +70,7 @@ def sidebar():
             </ol>
         </div>
         """, unsafe_allow_html=True)
-    # Adds a description and step-by-step guide to the sidebar with custom HTML and CSS.
-    # The steps are listed in an ordered list with headings and bold text for emphasis.
 
-    
 def create_streamlit_app(llm, portfolio, clean_text):
     """
     Sets up the main functionality of the Streamlit app.
@@ -110,68 +82,47 @@ def create_streamlit_app(llm, portfolio, clean_text):
     """
     # Input field for URL or plain text
     user_input = st.chat_input("Please provide a valid URL or job description:")
-    # Creates an input field in the app where users can provide a URL or job description.
 
     if user_input:
         try:
             if user_input.startswith(('http://', 'https://')):
                 # Load and process data from URL
                 loader = WebBaseLoader([user_input])
-                # Creates an instance of WebBaseLoader with the URL provided by the user.
                 page_content = loader.load().pop().page_content
-                # Loads the content from the URL and retrieves the page content.
                 data = clean_text(page_content)
-                # Cleans the page content using the clean_text function.
             else:
                 # Use the provided plain text
                 data = clean_text(user_input)
-                # Cleans the plain text provided by the user.
 
             # Load portfolio and extract job details
             portfolio.load_portfolio()
-            # Loads portfolio data using the Portfolio instance.
             jobs = llm.extract_jobs(data)
-            # Extracts job details from the cleaned data using the Chain instance (llm).
 
             if jobs:
                 for job in jobs:
                     # Extract required skills and query portfolio
                     skills = job.get('skills', [])
-                    # Retrieves skills required for the job from the job details.
                     links = portfolio.query_links(skills)
-                    # Queries the portfolio for links related to the required skills.
 
                     # Generate email draft
                     email = llm.write_mail(job, links)
-                    # Generates an email draft based on the job details and relevant links.
 
+                    # Display the email draft and user input
                     st.write("```markdown\n" + email + "\n```")
-                     st.write("```markdown\n" + user_input + "\n```")
-                    
-
-                    # Displays the email draft in the app using Markdown formatting.
-                    # 'email.title().strip()' ensures the email title is capitalized and whitespace is removed.
+                    st.write("```markdown\n" + user_input + "\n```")
             else:
-                st.warning("Warning: No job postings were found in the content you provided. Please ensure that your submission includes valid information and includes the following details: role, experience, skills, and description.")
-                # Displays a warning message if no job postings were found in the provided content.
+                st.warning("Warning: No job postings were found in the content you provided. Please ensure that your submission includes valid information and includes details such as role, experience, skills, and description.")
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
-            # Displays an error message if an exception occurs during processing.
 
 if __name__ == "__main__":
     # Initialize components
     chain = Chain()
-    # Creates an instance of the Chain class.
-
     portfolio = Portfolio()
-    # Creates an instance of the Portfolio class.
 
     # Display sidebar
     sidebar()
-    # Calls the sidebar function to display the sidebar.
 
     # Run the Streamlit app
     create_streamlit_app(chain, portfolio, clean_text)
-    # Calls the create_streamlit_app function to set up the main functionality of the app,
-    # passing the Chain instance, Portfolio instance, and clean_text function as parameters.
