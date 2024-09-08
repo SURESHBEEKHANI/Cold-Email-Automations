@@ -19,6 +19,9 @@ from portfolio import Portfolio
 from utils import clean_text
 # Imports the clean_text function from the utils module.
 # This function is used to preprocess or clean up text data.
+import sqlite3
+print(sqlite3.sqlite_version)
+
 
 # Configure the Streamlit page
 st.set_page_config(
