@@ -145,7 +145,8 @@ def create_streamlit_app(llm, portfolio, clean_text):
                     email = llm.write_mail(job, links)
                     # Generates an email draft based on the job details and relevant links.
 
-                    st.code(email.title().strip(), language="Markdown")
+                    st.write("```markdown\n" + email + "\n```")
+
                     # Displays the email draft in the app using Markdown formatting.
                     # 'email.title().strip()' ensures the email title is capitalized and whitespace is removed.
             else:
