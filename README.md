@@ -1,4 +1,4 @@
-# Job Extraction and Cold Email Automation
+## Job Extraction and Cold Email Automation
 
 ## Overview
 
