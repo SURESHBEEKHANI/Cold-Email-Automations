@@ -1,3 +1,6 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st  # type: ignore # Import Streamlit
 # Imports the Streamlit library and assigns it the alias 'st'. 
 # Streamlit is used for creating interactive web apps.
@@ -19,8 +22,6 @@ from portfolio import Portfolio
 from utils import clean_text
 # Imports the clean_text function from the utils module.
 # This function is used to preprocess or clean up text data.
-import sqlite3
-print(sqlite3.sqlite_version)
 
 
 # Configure the Streamlit page
