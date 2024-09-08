@@ -1,6 +1,9 @@
 import pandas as pd
 import chromadb
 import uuid
+import sqlite3
+print(sqlite3.sqlite_version)
+
 
 
 class Portfolio:
