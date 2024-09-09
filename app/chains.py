@@ -1,80 +1,82 @@
-# Import necessary modules
-import os  # Provides a way to use operating system-dependent functionality like accessing environment variables
-from langchain_groq import ChatGroq  # type: ignore # Imports the ChatGroq class for interacting with a language model
-from langchain_core.prompts import PromptTemplate  # type: ignore # Imports PromptTemplate for creating prompt templates
-from langchain_core.output_parsers import JsonOutputParser  # type: ignore # Imports JsonOutputParser for parsing output into JSON
-from langchain_core.exceptions import OutputParserException  # type: ignore # Imports OutputParserException for handling parsing errors
-from dotenv import load_dotenv  # type: ignore # Imports load_dotenv to load environment variables from a .env file
+import os
+from langchain_groq import ChatGroq
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.exceptions import OutputParserException
+from dotenv import load_dotenv
 
-# Load environment variables from a .env file
+# Load environment variables from the .env file
 load_dotenv()
 
-# Define the Chain class
 class Chain:
     def __init__(self):
-        # Initialize the ChatGroq language model with a specific API key and model name
+        # Initialize the language model with the API key and specified model
         self.llm = ChatGroq(
-            temperature=0,  # Set temperature for model responses (0 for deterministic responses)
-            groq_api_key=os.getenv("GROQ_API_KEY"),  # Retrieve the API key from environment variables
-            model_name="llama-3.1-70b-versatile"  # Specify the model name to us
+            temperature=0,  # Use deterministic responses
+            groq_api_key=os.getenv("GROQ_API_KEY"),  # Get the API key from environment variables
+            model_name="llama-3.1-70b-versatile"  # Specify the model to be used
         )
 
     def extract_jobs(self, cleaned_text):
-        # Create a prompt template for extracting job postings from text
+        # Define the prompt template for extracting job information from the scraped text
         prompt_extract = PromptTemplate.from_template(
             """
             ### SCRAPED TEXT FROM WEBSITE:
             {page_data}
+
             ### INSTRUCTION:
-            The scraped text is from the career's page of a website.or input text
-            Your job is to extract the job postings and return them in JSON format containing the following keys: `role`, `experience`, `skills` and `description`.
-            Only return the valid JSON.
+            The provided text is scraped from the careers page of a website.
+            Extract the job postings from this text and return them in JSON format with the following keys: 
+            `role`, `experience`, `skills`, and `description`.
+            Only return valid JSON.
+
             ### VALID JSON (NO PREAMBLE):
             """
         )
-        # Create a processing chain that combines the prompt template with the language model
+        # Create the extraction chain combining the prompt and the language model
         chain_extract = prompt_extract | self.llm
-        # Invoke the chain with the cleaned text as input
+        # Invoke the chain with the input text
         res = chain_extract.invoke(input={"page_data": cleaned_text})
+        
         try:
-            # Create a JSON output parser to parse the result
-            json_parser = JsonOutputParser()
             # Parse the result into JSON format
+            json_parser = JsonOutputParser()
             res = json_parser.parse(res.content)
         except OutputParserException:
-            # Handle parsing errors, e.g., if the context is too large
-            raise OutputParserException("provode Context `role`, `experience`, `skills` and `description`. . Unable to write colud email for provode contect")
-        # Return the result as a list of job postings
+            # Handle parsing errors
+            raise OutputParserException("Context too large. Unable to parse job postings.")
+        
+        # Ensure the result is returned as a list of job postings
         return res if isinstance(res, list) else [res]
 
     def write_mail(self, job, links):
-        # Create a prompt template for writing a cold email
+        # Define the prompt template for writing a cold email
         prompt_email = PromptTemplate.from_template(
             """
             ### JOB DESCRIPTION:
             {job_description}
 
             ### INSTRUCTION:
-            You are SURESH Beekhani, a business development executive at NexGenai. NexGeani is an AI & Software Consulting company dedicated to facilitating
+            You are Suresh beekhani, a Business Development Executive at nexgenai. nexgen is an AI and Software Consulting company, dedicated to facilitating 
             the seamless integration of business processes through automated tools. 
-            Over our experience, we have empowered numerous enterprises with tailored solutions, fostering scalability, 
-            process optimization, cost reduction, and heightened overall efficiency. 
-            Your job is to write a cold email to the client regarding the job mentioned above describing the capability of NexGenai
-            in fulfilling their needs.
-            Also add the most relevant ones from the following links to showcase NexGenai portfolio: {link_list}
-            Remember you are SURESH Beekhani, BDE at NexGeani. 
+            With extensive experience, nexgenai has empowered numerous enterprises with tailored solutions, fostering scalability, 
+            process optimization, cost reduction, and heightened overall efficiency.
+            
+            Your task is to write a cold email to the client regarding the job mentioned above, describing how nexgenai can address their needs.
+            Also, include the most relevant examples from the following portfolio links to showcase AtliQ's expertise: {link_list}.
+            Remember, you are Mohan, BDE at AtliQ, and the email should be concise and professional.
             Do not provide a preamble.
+            
             ### EMAIL (NO PREAMBLE):
             """
         )
-        # Create a processing chain that combines the email prompt template with the language model
+        # Create the email generation chain by combining the prompt and the language model
         chain_email = prompt_email | self.llm
-        # Invoke the chain with the job description and links as input
+        # Invoke the chain with the job description and portfolio links as input
         res = chain_email.invoke({"job_description": str(job), "link_list": links})
-        # Return the content of the generated email
+        # Return the generated email content
         return res.content
 
-# Code to run if this script is executed directly (not imported)
+# Code to run if the script is executed directly (useful for debugging)
 if __name__ == "__main__":
-    # Print the value of the GROQ_API_KEY environment variable (useful for debugging)
     print(os.getenv("GROQ_API_KEY"))
