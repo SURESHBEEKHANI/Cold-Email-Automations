@@ -48,31 +48,29 @@ class Chain:
         
         # Ensure the result is returned as a list of job postings
         return res if isinstance(res, list) else [res]
-        
-        def write_mail(self, job, links):
+
+    def write_mail(self, job, links):
         # Define the prompt template for writing a cold email
         prompt_email = PromptTemplate.from_template(
-
             """
             ### JOB DESCRIPTION:
             {job_description}
 
             ### INSTRUCTION:
-            You are Suresh beekhani, a Business Development Executive at nexgenai. nexgen is an AI and Software Consulting company, dedicated to facilitating 
-            the seamless integration of business processes through automated tools. 
-            With extensive experience, nexgenai has empowered numerous enterprises with tailored solutions, fostering scalability, 
+            You are Suresh Beekhani, a Business Development Executive at NexgenAI. NexgenAI is an AI and Software Consulting company, 
+            dedicated to facilitating the seamless integration of business processes through automated tools. 
+            With extensive experience, NexgenAI has empowered numerous enterprises with tailored solutions, fostering scalability, 
             process optimization, cost reduction, and heightened overall efficiency.
-            
-            Your task is to write a cold email to the client regarding the job mentioned above, describing how nexgenai can address their needs.
-            Also, include the most relevant examples from the following portfolio links to showcase nexgenai's expertise: {link_list}.
-            Remember, you are Mohan, BDE at AtliQ, and the email should be concise and professional.
+
+            Your task is to write a cold email to the client regarding the job mentioned above, describing how NexgenAI can address their needs.
+            Also, include the most relevant examples from the following portfolio links to showcase NexgenAI's expertise: {link_list}.
+            Remember, you are Suresh Beekhani, BDE at nexgenai, and the email should be concise and professional.
             Do not provide a preamble.
-            
+
             ### EMAIL (NO PREAMBLE):
             If the Answer is not found in the Context, then return "N/A", otherwise return the precise Answer.
             """
         )
-           
         
         # Create the email generation chain by combining the prompt and the language model
         chain_email = prompt_email | self.llm
