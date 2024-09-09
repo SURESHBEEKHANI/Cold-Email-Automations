@@ -119,8 +119,7 @@ if __name__ == "__main__":
     # Initialize components
     chain = Chain()  # Initialize your Chain instance
     portfolio = Portfolio()
-    
-    # Check for appropriate methods or attributes
+
     # Ensure the conversation object is properly set
     if hasattr(chain, 'run') and callable(chain.run):
         st.session_state.conversation = chain.run
