@@ -31,6 +31,7 @@ class Chain:
             Only return valid JSON.
 
             ### VALID JSON (NO PREAMBLE):
+            If no valid job postings are found with all required fields, return a message indicating that the required fields (`role`, `experience`, `skills`, and `description`) are missing
             """
         )
         # Create the extraction chain combining the prompt and the language model
