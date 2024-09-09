@@ -1,31 +1,25 @@
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
-import streamlit as st  # Import Streamlit for creating the web app
-from langchain_community.document_loaders import WebBaseLoader  # Import WebBaseLoader for processing web content
-from chains import Chain  # Import Chain for processing or handling data
-from portfolio import Portfolio  # Import Portfolio for managing or querying portfolio data
-from utils import clean_text  # Import clean_text for preprocessing text data
+import streamlit as st
+from langchain_community.document_loaders import WebBaseLoader
+from chains import Chain
+from portfolio import Portfolio
+from utils import clean_text
 
 # Configure the Streamlit page
 st.set_page_config(
-    layout="wide",  # Use a wide layout
-    page_title="Cloud Email Generator",  # Set the page title
-    page_icon="📧"  # Set the page icon
+    layout="wide",
+    page_title="Cloud Email Generator",
+    page_icon="📧"
 )
 
 def sidebar():
     """
     Sets up the sidebar with a logo, title, description, and step-by-step guide.
     """
-    # Display the logo
     st.sidebar.image(
-        r'imgs/img.png',  # Path to the logo image
+        r'imgs/img.png',
         use_column_width=True
     )
 
-    # Add a centered title with custom HTML and CSS
     st.sidebar.markdown("""
         <style>
         .sidebar-title {
@@ -39,7 +33,6 @@ def sidebar():
         </div>
         """, unsafe_allow_html=True)
 
-    # Add a description and step-by-step guide
     st.sidebar.markdown("""
         <style>
         .sidebar-description {
@@ -71,6 +64,14 @@ def sidebar():
         </div>
         """, unsafe_allow_html=True)
 
+def display_chat_history():
+    """
+    Displays the chat history stored in the session state.
+    """
+    if "chat_history" in st.session_state:
+        for entry in st.session_state.chat_history:
+            st.write(f"**{entry['role']}**: {entry['message']}")
+
 def create_streamlit_app(llm, portfolio, clean_text):
     """
     Sets up the main functionality of the Streamlit app.
@@ -80,10 +81,17 @@ def create_streamlit_app(llm, portfolio, clean_text):
     - portfolio: Instance of the Portfolio class.
     - clean_text: Function for cleaning up text.
     """
+    # Initialize chat history in session state
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
     # Input field for URL or plain text
     user_input = st.chat_input("Please provide a valid URL or job description:")
 
     if user_input:
+        # Add user message to chat history
+        st.session_state.chat_history.append({"role": "User", "message": user_input})
+        
         try:
             if user_input.startswith(('http://', 'https://')):
                 # Load and process data from URL
@@ -113,11 +121,18 @@ def create_streamlit_app(llm, portfolio, clean_text):
                     # Display the user input with a title
                     st.write("### User Input:")
                     st.write(f"```markdown\n{user_input}\n```")
+
+                    # Add bot message to chat history
+                    st.session_state.chat_history.append({"role": "Bot", "message": email})
             else:
                 st.warning("Warning: No job postings were found in the content you provided. Please ensure that your submission includes valid information and includes the following details: role, experience, skills, and description.")
                 
         except Exception as e:
             st.error(f"An error occurred: {e}")
+            st.session_state.chat_history.append({"role": "Bot", "message": f"An error occurred: {e}"})
+
+    # Display chat history
+    display_chat_history()
 
 if __name__ == "__main__":
     # Initialize components
@@ -129,4 +144,3 @@ if __name__ == "__main__":
     
     # Run the Streamlit app
     create_streamlit_app(chain, portfolio, clean_text)
-
