@@ -71,8 +71,8 @@ def display_chat_history():
     """
     Displays the chat history stored in the session state with stickers and copy buttons.
     """
-    user_sticker = "imgs/user.jpg"  # Path to user sticker
-    bot_sticker = "imgs/images.png"    # Path to bot sticker
+    user_sticker = "imgs/user.png"  # Path to user sticker
+    bot_sticker = "imgs/bot.png"    # Path to bot sticker
 
     if "chat_history" in st.session_state:
         for entry in st.session_state.chat_history:
