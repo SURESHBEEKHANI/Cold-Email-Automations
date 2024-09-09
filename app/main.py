@@ -2,30 +2,30 @@ __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-import streamlit as st  # Import Streamlit for creating the web app
-from langchain_community.document_loaders import WebBaseLoader  # Import WebBaseLoader for processing web content
-from chains import Chain  # Import Chain for processing or handling data
-from portfolio import Portfolio  # Import Portfolio for managing or querying portfolio data
-from utils import clean_text  # Import clean_text for preprocessing text data
+import streamlit as st  # Keep Streamlit for sidebar and web functionality
+from langchain_community.document_loaders import WebBaseLoader  # For processing web content
+from chains import Chain  # For processing or handling data
+from portfolio import Portfolio  # For managing or querying portfolio data
+from utils import clean_text  # For preprocessing text data
 
-# Configure the Streamlit page
+# Streamlit configuration
 st.set_page_config(
-    layout="wide",  # Use a wide layout
-    page_title="Cloud Email Generator",  # Set the page title
-    page_icon="📧"  # Set the page icon
+    layout="wide",  # Use wide layout
+    page_title="Cloud Email Generator",  # Set page title
+    page_icon="📧"  # Set page icon
 )
 
 def sidebar():
     """
-    Sets up the sidebar with a logo, title, description, and step-by-step guide.
+    Sets up the Streamlit sidebar with logo, title, description, and steps.
     """
-    # Display the logo
+    # Sidebar logo
     st.sidebar.image(
-        r'imgs/img.png',  # Path to the logo image
+        r'imgs/img.png',  # Path to logo image
         use_column_width=True
     )
 
-    # Add a centered title with custom HTML and CSS
+    # Sidebar title with HTML and CSS styling
     st.sidebar.markdown("""
         <style>
         .sidebar-title {
@@ -39,7 +39,7 @@ def sidebar():
         </div>
         """, unsafe_allow_html=True)
 
-    # Add a description and step-by-step guide
+    # Sidebar description and step-by-step guide
     st.sidebar.markdown("""
         <style>
         .sidebar-description {
@@ -73,25 +73,19 @@ def sidebar():
 
 def create_streamlit_app(llm, portfolio, clean_text):
     """
-    Sets up the main functionality of the Streamlit app.
-    
-    Parameters:
-    - llm: Language model instance (e.g., Chain object).
-    - portfolio: Instance of the Portfolio class.
-    - clean_text: Function for cleaning up text.
+    The main function for handling the web version of the app in Streamlit.
     """
-    # Input field for URL or plain text
+    # Input field for URL or plain text in Streamlit
     user_input = st.chat_input("Please provide a valid URL or job description:")
 
     if user_input:
         try:
+            # Process the input based on URL or plain text
             if user_input.startswith(('http://', 'https://')):
-                # Load and process data from URL
                 loader = WebBaseLoader([user_input])
                 page_content = loader.load().pop().page_content
                 data = clean_text(page_content)
             else:
-                # Use the provided plain text
                 data = clean_text(user_input)
 
             # Load portfolio and extract job details
@@ -104,25 +98,125 @@ def create_streamlit_app(llm, portfolio, clean_text):
                     skills = job.get('skills', [])
                     links = portfolio.query_links(skills)
 
-                    # Generate email draft
+                    # Generate the email draft
                     email = llm.write_mail(job, links)
 
-                    # Display the email draft and user input
+                    # Display the email draft and input in Streamlit
                     st.write("```markdown\n" + email + "\n```")
                     st.write("```markdown\n" + user_input + "\n```")
             else:
-                st.warning("Warning: No job postings were found in the content you provided. Please ensure that your submission includes valid information and includes details such as role, experience, skills, and description.")
+                st.warning("Warning: No job postings were found in the content you provided. Please ensure your input includes role, experience, skills, and description.")
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
 
+class ChatBotApp:
+    """
+    A chatbot for generating personalized cold emails based on job descriptions or URLs.
+    """
+
+    def __init__(self):
+        # Initialize language model and portfolio
+        self.llm = Chain()  # Language model instance
+        self.portfolio = Portfolio()  # Portfolio instance
+
+    def get_user_input(self, conversation_history):
+        """
+        Extracts the latest message from the conversation history.
+
+        Parameters:
+        - conversation_history: The history of conversation with the chatbot.
+
+        Returns:
+        - user_input: The latest user input.
+        """
+        # Assuming conversation_history is a list of message dictionaries
+        if conversation_history:
+            # Get the latest user message in the conversation
+            return conversation_history[-1]['message']
+        return None
+
+    def handle_input(self, user_input):
+        """
+        Processes the user input (URL or plain text).
+
+        Parameters:
+        - user_input: The input provided by the user.
+
+        Returns:
+        - A response message with the generated email draft or an error/warning message.
+        """
+        try:
+            if user_input.startswith(('http://', 'https://')):
+                # Load and process data from URL
+                loader = WebBaseLoader([user_input])
+                page_content = loader.load().pop().page_content
+                data = clean_text(page_content)
+            else:
+                # Process plain text input
+                data = clean_text(user_input)
+
+            # Load portfolio and extract job details
+            self.portfolio.load_portfolio()
+            jobs = self.llm.extract_jobs(data)
+
+            if jobs:
+                response = ""
+                for job in jobs:
+                    # Extract required skills and query portfolio
+                    skills = job.get('skills', [])
+                    links = self.portfolio.query_links(skills)
+
+                    # Generate email draft
+                    email = self.llm.write_mail(job, links)
+
+                    # Append the email draft to the response
+                    response += f"Generated Email Draft:\n{email}\n\n"
+
+                return response
+            else:
+                return "Warning: No job postings were found in the content you provided. Please ensure the input includes role, experience, skills, and description."
+
+        except Exception as e:
+            return f"Error: {e}"
+
+    def chat(self, conversation_history):
+        """
+        Main function to handle the chatbot conversation flow.
+
+        Parameters:
+        - conversation_history: The history of conversation with the chatbot.
+        """
+        user_input = self.get_user_input(conversation_history)
+
+        if user_input:
+            # Process the user input and generate a response
+            response = self.handle_input(user_input)
+            return response
+        else:
+            return "Please provide a valid URL or job description to proceed."
+
+
+# Main entry for both Streamlit app and chatbot
 if __name__ == "__main__":
-    # Initialize components
+    # Run the Streamlit app with sidebar
+    sidebar()
+
+    # Initialize language model and portfolio for Streamlit
     chain = Chain()
     portfolio = Portfolio()
 
-    # Display sidebar
-    sidebar()
-
-    # Run the Streamlit app
+    # Run Streamlit app
     create_streamlit_app(chain, portfolio, clean_text)
+
+    # Example usage for chatbot
+    # Simulating conversation history (list of messages between user and chatbot)
+    conversation_history = [
+        {"role": "user", "message": "https://example.com/job-description"},
+        # Additional chat history can be added...
+    ]
+
+    chatbot = ChatBotApp()
+    # Generate response based on the latest conversation input
+    response = chatbot.chat(conversation_history)
+    print(response)
