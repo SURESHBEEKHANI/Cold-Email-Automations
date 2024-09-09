@@ -53,7 +53,7 @@ class Chain:
         # Define the prompt template for writing a cold email
         prompt_email = PromptTemplate.from_template(
 
-        """
+            """
             ### JOB DESCRIPTION:
             {job_description}
 
@@ -70,7 +70,7 @@ class Chain:
             
             ### EMAIL (NO PREAMBLE):
             If the Answer is not found in the Context, then return "N/A", otherwise return the precise Answer.
-         """
+            """
         )
            
         
