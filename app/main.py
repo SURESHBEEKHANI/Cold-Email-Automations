@@ -1,4 +1,4 @@
-__import__('pysqlite3')
+ __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
@@ -14,7 +14,7 @@ st.set_page_config(
     page_title="Cloud Email Generator",  # Set the page title
     page_icon="📧"  # Set the page icon
 )
-st.title('My Streamlit App')
+st.title('Cloud Email')
 
 def sidebar():
     """
