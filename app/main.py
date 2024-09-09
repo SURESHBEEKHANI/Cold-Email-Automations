@@ -1,12 +1,8 @@
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
-import streamlit as st  # Import Streamlit for creating the web app
-from langchain_community.document_loaders import WebBaseLoader  # Import WebBaseLoader for processing web content
-from chains import Chain  # Import Chain for processing or handling data
-from portfolio import Portfolio  # Import Portfolio for managing or querying portfolio data
-from utils import clean_text  # Import clean_text for preprocessing text data
+import streamlit as st
+from langchain_community.document_loaders import WebBaseLoader
+from chains import Chain
+from portfolio import Portfolio
+from utils import clean_text
 
 # Configure the Streamlit page
 st.set_page_config(
@@ -26,7 +22,7 @@ def sidebar():
     )
 
     # Add a centered title with custom HTML and CSS
-    st.sidebar.markdown("""
+    st.sidebar.markdown(""" 
         <style>
         .sidebar-title {
             text-align: center;
@@ -40,7 +36,7 @@ def sidebar():
         """, unsafe_allow_html=True)
 
     # Add a description and step-by-step guide
-    st.sidebar.markdown("""
+    st.sidebar.markdown(""" 
         <style>
         .sidebar-description {
             text-align: center;
@@ -71,6 +67,42 @@ def sidebar():
         </div>
         """, unsafe_allow_html=True)
 
+def handle_userinput(user_input):
+    """
+    Handles user input, generates a response, and updates the chat history.
+    """
+    # Ensure that 'conversation' and 'chat_history' are initialized in session state
+    if 'conversation' not in st.session_state:
+        st.session_state.conversation = None
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+
+    # Display a spinner while generating a response
+    with st.spinner('Generating response...'):
+        try:
+            # Generate the response using the conversation object
+            result = st.session_state.conversation({"query": user_input})
+            response = result['result']
+            source = result['source_documents'][0].metadata['source']
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+            response = "Sorry, there was an error processing your request."
+            source = "N/A"
+
+    # Append user input and response to chat history
+    st.session_state.chat_history.append(user_input)
+    st.session_state.chat_history.append(f"{response} \nSource Document: {source}")
+
+    # Display chat history
+    response_container = st.container()
+
+    with response_container:
+        for i, message in enumerate(st.session_state.chat_history):
+            if i % 2 == 0:
+                st.write(f"**User:** {message}")
+            else:
+                st.write(f"**Response:** {message}")
+
 def create_streamlit_app(llm, portfolio, clean_text):
     """
     Sets up the main functionality of the Streamlit app.
@@ -81,43 +113,13 @@ def create_streamlit_app(llm, portfolio, clean_text):
     - clean_text: Function for cleaning up text.
     """
     # Input field for URL or plain text
-    user_input = st.chat_input("Please provide a valid URL or job description:")
+    user_input = st.text_input("Please provide a valid URL or job description:")
 
-    if user_input:
-        try:
-            if user_input.startswith(('http://', 'https://')):
-                # Load and process data from URL
-                loader = WebBaseLoader([user_input])
-                page_content = loader.load().pop().page_content
-                data = clean_text(page_content)
-            else:
-                # Use the provided plain text
-                data = clean_text(user_input)
-            
-            # Load portfolio and extract job details
-            portfolio.load_portfolio()
-            jobs = llm.extract_jobs(data)
-            
-            if jobs:
-                for job in jobs:
-                    # Extract required skills and query portfolio
-                    skills = job.get('skills', [])
-                    links = portfolio.query_links(skills)
-                    
-                    # Generate email draft
-                    email = llm.write_mail(job, links)
-                    # Display the email draft with a title
-                    st.write("### Generated Email Draft:")
-                    st.write(f"```markdown\n{email}\n```")
-
-                    # Display the user input with a title
-                    st.write("### User Input:")
-                    st.write(f"```markdown\n{user_input}\n```")
-            else:
-                st.warning("Warning: No job postings were found in the content you provided. Please ensure that your submission includes valid information and includes the following details: role, experience, skills, and description.")
-                
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+    if st.button("Submit"):
+        if user_input:
+            handle_userinput(user_input)
+        else:
+            st.warning("Please enter a query before submitting.")
 
 if __name__ == "__main__":
     # Initialize components
@@ -129,4 +131,3 @@ if __name__ == "__main__":
     
     # Run the Streamlit app
     create_streamlit_app(chain, portfolio, clean_text)
-
