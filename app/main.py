@@ -114,13 +114,6 @@ def create_streamlit_app(llm, portfolio, clean_text):
                     
                     # Generate email draft
                     email = llm.write_mail(job, links)
-                    # Display the email draft with a title
-                    st.write("### Generated Email Draft:")
-                    st.write(f"```markdown\n{email}\n```")
-
-                    # Display the user input with a title
-                    st.write("### User Input:")
-                    st.write(f"```markdown\n{user_input}\n```")
 
                     # Add bot message to chat history
                     st.session_state.chat_history.append({"role": "Bot", "message": email})
