@@ -69,14 +69,22 @@ def sidebar():
 
 def display_chat_history():
     """
-    Displays the chat history stored in the session state with stickers.
+    Displays the chat history stored in the session state with stickers and copy buttons.
     """
     if "chat_history" in st.session_state:
         for entry in st.session_state.chat_history:
             if entry['role'] == 'User':
                 st.markdown(f"**👤 User:** {entry['message']}")
+                st.button("Copy User Input", key=f"user_input_{entry['message']}", on_click=copy_to_clipboard, args=(entry['message'],))
             elif entry['role'] == 'Bot':
                 st.markdown(f"**🤖 Bot:** {entry['message']}")
+                st.button("Copy Email Draft", key=f"bot_response_{entry['message']}", on_click=copy_to_clipboard, args=(entry['message'],))
+
+def copy_to_clipboard(text):
+    """
+    Copies the given text to the clipboard.
+    """
+    st.write(f'<script>navigator.clipboard.writeText("{text}");</script>', unsafe_allow_html=True)
 
 def create_streamlit_app(llm, portfolio, clean_text):
     """
@@ -120,8 +128,7 @@ def create_streamlit_app(llm, portfolio, clean_text):
                     
                     # Generate email draft
                     email = llm.write_mail(job, links)
-                    # Display the email draft with a titl
-
+                    
                     # Add bot message to chat history
                     st.session_state.chat_history.append({"role": "Bot", "message": email})
             else:
