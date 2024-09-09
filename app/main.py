@@ -74,10 +74,10 @@ def display_chat_history():
     if "chat_history" in st.session_state:
         for entry in st.session_state.chat_history:
             if entry['role'] == 'User':
-                st.markdown(👤  {entry['message']}")
+                st.markdown(f"👤 {entry['message']}")
                 
             elif entry['role'] == 'Bot':
-                st.markdown(f"**🤖 ** {entry['message']}")
+                st.markdown(f"🤖 {entry['message']}")
                
 
 def copy_to_clipboard(text):
