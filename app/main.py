@@ -143,7 +143,7 @@ def create_streamlit_app(llm, portfolio, clean_text):
                     # Add bot message to chat history
                     st.session_state.chat_history.append({"role": "Bot", "message": email})
             else:
-                st.warning("Warning: No job postings were found in the content you provided. Please ensure that your submission includes valid information and includes the following details: role, experience, skills, and description.")
+                st.info("Warning: No job postings were found in the content you provided. Please ensure that your submission includes valid information and includes the following details: role, experience, skills, and description.")
                 
         except Exception as e:
             st.error(f"An error occurred: {e}")
