@@ -6,22 +6,20 @@ from utils import clean_text
 
 # Configure the Streamlit page
 st.set_page_config(
-    layout="wide",  # Use a wide layout
-    page_title="Cloud Email Generator",  # Set the page title
-    page_icon="📧"  # Set the page icon
+    layout="wide",
+    page_title="Cloud Email Generator",
+    page_icon="📧"
 )
 
 def sidebar():
     """
     Sets up the sidebar with a logo, title, description, and step-by-step guide.
     """
-    # Display the logo
     st.sidebar.image(
-        r'imgs/img.png',  # Path to the logo image
+        r'imgs/img.png',
         use_column_width=True
     )
 
-    # Add a centered title with custom HTML and CSS
     st.sidebar.markdown(""" 
         <style>
         .sidebar-title {
@@ -35,7 +33,6 @@ def sidebar():
         </div>
         """, unsafe_allow_html=True)
 
-    # Add a description and step-by-step guide
     st.sidebar.markdown(""" 
         <style>
         .sidebar-description {
@@ -71,16 +68,15 @@ def handle_userinput(user_input):
     """
     Handles user input, generates a response, and updates the chat history.
     """
-    # Ensure that 'conversation' and 'chat_history' are initialized in session state
-    if 'conversation' not in st.session_state:
-        st.session_state.conversation = None
+    if 'conversation' not in st.session_state or st.session_state.conversation is None:
+        st.error("Error: The conversation object is not initialized.")
+        return
+
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
 
-    # Display a spinner while generating a response
     with st.spinner('Generating response...'):
         try:
-            # Generate the response using the conversation object
             result = st.session_state.conversation({"query": user_input})
             response = result['result']
             source = result['source_documents'][0].metadata['source']
@@ -89,11 +85,9 @@ def handle_userinput(user_input):
             response = "Sorry, there was an error processing your request."
             source = "N/A"
 
-    # Append user input and response to chat history
     st.session_state.chat_history.append(user_input)
     st.session_state.chat_history.append(f"{response} \nSource Document: {source}")
 
-    # Display chat history
     response_container = st.container()
 
     with response_container:
@@ -112,7 +106,6 @@ def create_streamlit_app(llm, portfolio, clean_text):
     - portfolio: Instance of the Portfolio class.
     - clean_text: Function for cleaning up text.
     """
-    # Input field for URL or plain text
     user_input = st.text_input("Please provide a valid URL or job description:")
 
     if st.button("Submit"):
@@ -125,6 +118,9 @@ if __name__ == "__main__":
     # Initialize components
     chain = Chain()
     portfolio = Portfolio()
+    
+    # Ensure the conversation object is properly set
+    st.session_state.conversation = chain.create_conversation()  # Adjust as needed for your Chain instance
     
     # Display sidebar
     sidebar()
