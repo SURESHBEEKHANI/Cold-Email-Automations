@@ -71,13 +71,24 @@ def display_chat_history():
     """
     Displays the chat history stored in the session state with stickers and copy buttons.
     """
+    user_sticker = "path/to/user_sticker.png"  # Path to user sticker
+    bot_sticker = "path/to/bot_sticker.png"    # Path to bot sticker
+
     if "chat_history" in st.session_state:
         for entry in st.session_state.chat_history:
             if entry['role'] == 'User':
-                st.markdown(f"👤 {entry['message']}")
-                
+                col1, col2 = st.columns([1, 4])
+                with col1:
+                    st.image(user_sticker, width=50)  # Adjust width as needed
+                with col2:
+                    st.markdown(f"**User:** {entry['message']}")
+                   
             elif entry['role'] == 'Bot':
-                st.markdown(f"🤖 {entry['message']}")
+                col1, col2 = st.columns([1, 4])
+                with col1:
+                    st.image(bot_sticker, width=50)  # Adjust width as needed
+                with col2:
+                    st.markdown(f"**Bot:** {entry['message']}")
                
 
 def copy_to_clipboard(text):
