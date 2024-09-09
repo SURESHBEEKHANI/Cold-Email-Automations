@@ -14,6 +14,7 @@ st.set_page_config(
     page_title="Cloud Email Generator",  # Set the page title
     page_icon="📧"  # Set the page icon
 )
+st.title('My Streamlit App')
 
 def sidebar():
     """
