@@ -77,6 +77,7 @@ def handle_userinput(user_input):
 
     with st.spinner('Generating response...'):
         try:
+            # Generate the response using the conversation object
             result = st.session_state.conversation({"query": user_input})
             response = result['result']
             source = result['source_documents'][0].metadata['source']
@@ -116,12 +117,16 @@ def create_streamlit_app(llm, portfolio, clean_text):
 
 if __name__ == "__main__":
     # Initialize components
-    chain = Chain()
+    chain = Chain()  # Initialize your Chain instance
     portfolio = Portfolio()
     
+    # Check for appropriate methods or attributes
     # Ensure the conversation object is properly set
-    st.session_state.conversation = chain.create_conversation()  # Adjust as needed for your Chain instance
-    
+    if hasattr(chain, 'run') and callable(chain.run):
+        st.session_state.conversation = chain.run
+    else:
+        st.error("Error: The Chain object does not have a callable method 'run'.")
+
     # Display sidebar
     sidebar()
     
