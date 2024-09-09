@@ -79,14 +79,14 @@ def display_chat_history():
             if entry['role'] == 'User':
                 col1, col2 = st.columns([1, 4])
                 with col1:
-                    st.image(user_sticker, width=50)  # Adjust width as needed
+                    st.image(user_sticker, width=30)  # Adjust width as needed
                 with col2:
                     st.markdown(f"**User:** {entry['message']}")
                    
             elif entry['role'] == 'Bot':
                 col1, col2 = st.columns([1, 4])
                 with col1:
-                    st.image(bot_sticker, width=50)  # Adjust width as needed
+                    st.image(bot_sticker, width=30)  # Adjust width as needed
                 with col2:
                     st.markdown(f"**Bot:** {entry['message']}")
                
