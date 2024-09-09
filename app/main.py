@@ -91,12 +91,6 @@ def display_chat_history():
                     st.markdown(f"**Bot:** {entry['message']}")
                
 
-def copy_to_clipboard(text):
-    """
-    Copies the given text to the clipboard.
-    """
-    st.write(f'<script>navigator.clipboard.writeText("{text}");</script>', unsafe_allow_html=True)
-
 def create_streamlit_app(llm, portfolio, clean_text):
     """
     Sets up the main functionality of the Streamlit app.
