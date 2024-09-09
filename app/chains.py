@@ -31,6 +31,7 @@ class Chain:
             Only return valid JSON.
 
             ### VALID JSON (NO PREAMBLE):
+            If the data is not found in the Context, then return "N/A", otherwise return the precise Answer.
             """
         )
         # Create the extraction chain combining the prompt and the language model
