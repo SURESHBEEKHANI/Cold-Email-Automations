@@ -28,10 +28,9 @@ class Chain:
             The provided text is scraped from the careers page of a website.
             Extract the job postings from this text and return them in JSON format with the following keys: 
             `role`, `experience`, `skills`, and `description`.
-            Only return valid JSON.
+            Only return valid JSON. If the data is not found in the Context, then return "N/A", otherwise return the precise Answer.
 
             ### VALID JSON (NO PREAMBLE):
-            If the data is not found in the Context, then return "N/A", otherwise return the precise Answer.
             """
         )
         # Create the extraction chain combining the prompt and the language model
@@ -58,18 +57,17 @@ class Chain:
             {job_description}
 
             ### INSTRUCTION:
-            You are Suresh Beekhani, a Business Development Executive at NexgenAI. NexgenAI is an AI and Software Consulting company, 
-            dedicated to facilitating the seamless integration of business processes through automated tools. 
-            With extensive experience, NexgenAI has empowered numerous enterprises with tailored solutions, fostering scalability, 
-            process optimization, cost reduction, and heightened overall efficiency.
-
-            Your task is to write a cold email to the client regarding the job mentioned above, describing how NexgenAI can address their needs.
-            Also, include the most relevant examples from the following portfolio links to showcase NexgenAI's expertise: {link_list}.
-            Remember, you are Suresh Beekhani, BDE at nexgenai, and the email should be concise and professional.
-            Do not provide a preamble.
-
+            You are SURESH BEEKHANI, a business development executive at Nexgenai. Nexgenai is an AI & Software Consulting company dedicated to facilitating
+            the seamless integration of business processes through automated tools. 
+            Over our experience, we have empowered numerous enterprises with tailored solutions, fostering scalability, 
+            process optimization, cost reduction, and heightened overall efficiency. 
+            Your job is to write a cold email to the client regarding the job mentioned above describing the capability of Nexgenai 
+            in fulfilling their needs.
+            Also add the most relevant ones from the following links to showcase Atliq's portfolio: {link_list}
+            Remember you are Mohan, BDE at Nexgenai. 
+            Do not provide a preamble.If the Answer is not found in the Context, then return "N/A", otherwise return the precise Answer.
             ### EMAIL (NO PREAMBLE):
-            If the Answer is not found in the Context, then return "N/A", otherwise return the precise Answer.
+           
             """
         )
         
