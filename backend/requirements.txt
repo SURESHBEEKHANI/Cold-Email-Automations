@@ -1,0 +1,18 @@
+langchain
+langchain-community
+langchain-groq
+unstructured
+selenium
+langchain-chroma
+pandas
+python-dotenv
+watchdog
+chroma-hnswlib
+chromadb
+crewai
+streamlit
+pysqlite3
+fastapi
+uvicorn
+pydantic
+# Add any other dependencies here
