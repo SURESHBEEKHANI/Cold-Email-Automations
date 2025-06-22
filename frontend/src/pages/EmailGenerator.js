@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Link as LinkIcon, FileText, Loader2, Copy, Download, Eye, EyeOff } from 'lucide-react';
+import { Mail, Link as LinkIcon, FileText, Loader2 } from 'lucide-react';
 import EmailForm from '../components/EmailForm';
 import EmailResults from '../components/EmailResults';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -14,22 +14,14 @@ const EmailGenerator = () => {
     setIsLoading(true);
     setError(null);
     setResults(null);
-
     try {
       const response = await fetch('/generate-emails', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'Failed to generate emails');
-      }
-
+      if (!response.ok) throw new Error(data.detail || 'Failed to generate emails');
       setResults(data);
     } catch (err) {
       setError(err.message);

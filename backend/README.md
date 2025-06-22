@@ -1,81 +1,122 @@
-## Job Extraction and Cold Email Automation
+## Cold Email Automation API
 
 ## Overview
 
-This project automates the extraction of job postings from a website's careers page and generates cold emails to potential clients. It leverages the power of a language model to perform these tasks efficiently, making it easier to handle large volumes of data and generate personalized emails.
+This project provides a FastAPI-based service that automates the extraction of job postings from websites and generates personalized cold emails to potential clients. It leverages AI agents powered by CrewAI and Groq to perform these tasks efficiently.
 
 ## Features
 
 - **Job Extraction**: Extracts job postings from scraped text, focusing on fields like role, experience, skills, and job description.
 - **Cold Email Generation**: Automatically writes personalized cold emails to potential clients based on the extracted job information and company portfolio links.
+- **RESTful API**: FastAPI-based endpoints for easy integration with frontend applications.
+- **Portfolio Matching**: Intelligent matching of portfolio items to job requirements.
 
 ## Technologies Used
 
-- **Python**: The core language used for scripting and automation.
-- **LangChain**: Utilized for creating prompt templates and processing the language model's responses.
-- **ChatGroq**: A language model service used to interpret and generate natural language text.
-- **dotenv**: For managing environment variables, particularly API keys.
-- **OS Module**: To interact with the operating system and retrieve environment variables.
+- **FastAPI**: Modern, fast web framework for building APIs
+- **CrewAI**: Framework for orchestrating role-playing autonomous AI agents
+- **LangChain**: Framework for developing applications with LLMs
+- **Groq**: High-performance LLM inference platform
+- **ChromaDB**: Vector database for portfolio matching
+- **Pandas**: Data manipulation and analysis
+- **Python-dotenv**: Environment variable management
 
 ## Installation
 
 1. **Clone the Repository**:
     ```bash
     git clone https://github.com/SURESHBEEKHANI/Job-Extraction-and-Cold-Email-Automation.git
-    cd Job-Extraction-and-Cold-Email-Automation
+    cd Job-Extraction-and-Cold-Email-Automation/backend
     ```
 
 2. **Install Dependencies**:
-    Ensure you have Python installed. Then, install the necessary Python packages:
     ```bash
-    pip install -r requirements.txt
+    pip install -e .
     ```
 
 3. **Set Up Environment Variables**:
-    Create a `.env` file in the root directory and add your `GROQ_API_KEY`:
+    Create a `.env` file in the backend directory and add your `GROQ_API_KEY`:
     ```bash
     GROQ_API_KEY=your_api_key_here
     ```
 
 ## Usage
 
-1. **Job Extraction**:
-    - The `extract_jobs` method takes in cleaned text from a website's careers page and extracts the job postings in JSON format.
-    - Example:
-      ```python
-      from your_module import Chain
+### Running the API Server
 
-      chain = Chain()
-      jobs = chain.extract_jobs(cleaned_text="Your cleaned text here")
-      print(jobs)
-      ```
+```bash
+python main.py
+```
 
-2. **Cold Email Generation**:
-    - The `write_mail` method generates a cold email based on a job description and a list of portfolio links.
-    - Example:
-      ```python
-      from your_module import Chain
+The API will be available at `http://localhost:8000`
 
-      chain = Chain()
-      email_content = chain.write_mail(job=jobs[0], links=["link1", "link2"])
-      print(email_content)
-      ```
+### API Endpoints
 
-3. **Running the Script**:
-    - To test if your environment is set up correctly, run the script:
-      ```bash
-      python your_script.py
-      ```
-    - This will print the `GROQ_API_KEY` value to ensure it's correctly loaded.
+#### 1. Health Check
+```bash
+GET /health
+```
+
+#### 2. Generate Emails
+```bash
+POST /generate-emails
+```
+
+**Request Body:**
+```json
+{
+    "url": "https://example.com/careers",
+    "job_description": "We are looking for a Python developer with 3+ years of experience in machine learning and data analysis."
+}
+```
+
+**Response:**
+```json
+{
+    "success": true,
+    "message": "Successfully generated 1 emails",
+    "emails": [
+        {
+            "job_title": "Python Developer",
+            "job_description": "We are looking for a Python developer...",
+            "required_skills": ["Python", "Machine Learning"],
+            "experience_level": "3+ years",
+            "email_content": "Dear Hiring Manager...",
+            "portfolio_matches": ["project1", "project2"],
+            "location": "Remote",
+            "work_type": "Full-time"
+        }
+    ],
+    "total_jobs": 1
+}
+```
+
+## Project Structure
+
+```
+backend/
+├── main.py              # FastAPI application entry point
+├── src/
+│   ├── agents.py        # CrewAI agents for job analysis and email generation
+│   ├── portfolio.py     # Portfolio management and matching
+│   └── utils.py         # Utility functions
+├── resource/            # Portfolio data and resources
+└── pyproject.toml       # Project dependencies and metadata
+```
 
 ## Customization
 
-- **Prompt Templates**: Modify the `PromptTemplate` definitions in the `extract_jobs` and `write_mail` methods to adjust the language model's behavior according to your needs.
-- **Model Configuration**: Change the `model_name` and `temperature` settings when initializing `ChatGroq` to customize the model's output style and behavior.
+- **Prompt Templates**: Modify the prompt templates in `src/agents.py` to adjust the AI behavior
+- **Portfolio Data**: Update the portfolio data in the `resource/` directory
+- **Model Configuration**: Adjust model settings in the agent initialization
 
 ## Error Handling
 
-- The `extract_jobs` method includes error handling to catch parsing errors due to large context sizes. An `OutputParserException` is raised if the model's response cannot be parsed into valid JSON.
+The API includes comprehensive error handling for:
+- Invalid input validation
+- Network errors when scraping URLs
+- AI model failures
+- Portfolio loading issues
 
 ## Contributing
 

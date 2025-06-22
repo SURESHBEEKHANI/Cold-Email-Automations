@@ -148,6 +148,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "selenium" },
     { name = "unstructured" },
+    { name = "uvicorn" },
     { name = "watchdog" },
 ]
 
@@ -165,6 +166,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "selenium", specifier = ">=4.33.0" },
     { name = "unstructured", specifier = ">=0.17.2" },
+    { name = "uvicorn", specifier = ">=0.34.3" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]
 

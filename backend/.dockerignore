@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# Virtual environments
+env/
+.venv/
+venv/
+ENV/
+
+# Development files
+.git/
+.gitignore
+.DS_Store
+*.log
+.coverage
+.pytest_cache/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Project specific
+test.py
+test_job.json
+*.db
+*.sqlite
+*.sqlite3
+
+# Documentation and images
+*.md
+imgs/
+docs/
+
+# Docker
+Dockerfile*
+.dockerignore
+
+# Lock files (we use pyproject.toml)
+uv.lock
+package-lock.json
+yarn.lock
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
