@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Link as LinkIcon, FileText, Loader2 } from 'lucide-react';
+import { Mail, Link as LinkIcon, FileText } from 'lucide-react';
 import EmailForm from '../components/EmailForm';
 import EmailResults from '../components/EmailResults';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -122,7 +122,19 @@ const EmailGenerator = () => {
           )}
 
           {results && !isLoading && (
-            <EmailResults results={results} />
+            <>
+              <EmailResults results={results} />
+              <div className="flex justify-end mt-6">
+                <button
+                  className="inline-flex items-center px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition-all gap-2"
+                  title="Save these emails to your history for later access"
+                  onClick={() => alert('Saved to history! (placeholder logic)')}
+                >
+                  <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  Save to History
+                </button>
+              </div>
+            </>
           )}
 
           {!results && !isLoading && !error && (

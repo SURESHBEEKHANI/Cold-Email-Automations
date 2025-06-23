@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Download, Eye, EyeOff, CheckCircle, ExternalLink, Tag, MapPin, Clock } from 'lucide-react';
+import { Copy, Download, Eye, EyeOff, CheckCircle, ExternalLink, Tag, MapPin, Clock, Share2, Mail } from 'lucide-react';
 
 const EmailResults = ({ results }) => {
   const [expandedEmails, setExpandedEmails] = useState(new Set());
@@ -53,10 +53,28 @@ const EmailResults = ({ results }) => {
     URL.revokeObjectURL(url);
   };
 
+  const shareEmail = async (email, index) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: email.job_title,
+          text: email.email_content,
+        });
+      } catch (err) {
+        // User cancelled or error
+      }
+    } else {
+      copyToClipboard(email.email_content, index);
+      alert('Copied to clipboard!');
+    }
+  };
+
   if (!results || !results.emails || results.emails.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">No emails generated</p>
+      <div className="text-center py-12 flex flex-col items-center">
+        <Mail className="h-12 w-12 mb-4 text-gray-300" />
+        <p className="text-gray-500 text-lg font-medium">No emails generated yet</p>
+        <p className="text-gray-400 text-sm mt-2">Generate cold emails to see them here</p>
       </div>
     );
   }
@@ -93,7 +111,11 @@ const EmailResults = ({ results }) => {
       {/* Email List */}
       <div className="space-y-6">
         {results.emails.map((email, index) => (
-          <div key={index} className="border border-gray-200 rounded-2xl shadow bg-white overflow-hidden transition hover:shadow-lg">
+          <div
+            key={index}
+            className="border border-gray-200 rounded-2xl shadow bg-white overflow-hidden transition hover:shadow-lg animate-fadeIn"
+            style={{ animationDelay: `${index * 80}ms` }}
+          >
             {/* Email Header */}
             <div className="bg-gradient-to-r from-gray-50 to-blue-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <div className="flex-1 min-w-0">
@@ -139,6 +161,13 @@ const EmailResults = ({ results }) => {
                   title="Download email"
                 >
                   <Download className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => shareEmail(email, index)}
+                  className="text-gray-500 hover:text-purple-600 p-2 rounded-full transition"
+                  title="Share email"
+                >
+                  <Share2 className="h-5 w-5" />
                 </button>
               </div>
             </div>
